@@ -2,4 +2,5 @@ Utility classes I have been using for some time
 
 OptionParser -> GetOpts equivalent in OOPs paradigm
 ClassFinder -> Utility to find a class in jar files
+DiscoveryService -> Utility to find classes with given package name in the classpath, useful for plugin architectures
 
