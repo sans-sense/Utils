@@ -7,6 +7,7 @@
     <meta name="author" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+    <link rel="stylesheet" href="./borrowed/mktree.css" type="text/css">
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <style>
       body {
@@ -52,12 +53,13 @@
     <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js"></script>
     <script src="./treemaker.js"></script>
+    <script type="text/javascript" src="./borrowed/mktree.js"></script>
 
     <script id="tree-template" type="text/x-handlebars-template">
       <p>{{name}}</p>
-      <ul>
+      <ul class='mktree'>
         {{#recursive children}}
-        <li><p>{{name}}</p>
+        <li class="liClosed">{{name}}
           {{#if children}}
           <ul>
             {{{recursive children}}}
@@ -91,9 +93,12 @@
       $('#render-tree').click(function(){
            var tree;
            tree = exports[$('#processor').attr('value')].buildTree($('#tree-data').attr('value').split('\n'));
-           $("#result-container").html(template(tree[0]));
+           resetTreeData(tree[0]);
+           convertTrees();
       });
-
+      function resetTreeData(data) {
+           $("#result-container").html(template(data));
+      }
       $('#render-tree').click()
      </script>
   </body>
