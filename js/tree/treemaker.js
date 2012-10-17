@@ -1,25 +1,30 @@
 var exports = {};
 
 (function() {
-    var stackFrameRegex, currentTrace;
-    stackFrameRegex = /(\S+):\s+(\d+):[\s\S]+([><]+)(\S+)/;
+    var callTraceRegex, currentTrace, backTraceMethodRegex, callTraceProcessor;
+    callTraceRegex = /(\S+):\s+(\d+):[\s\S]+([><]+)(\S+)/;
 
-    function buildTree(lines) {
+    function buildTree(lines, callback) {
         currentTrace = [{name:'root', children:[]}];
-        lines.forEach(function(line){processLine(line)});
+        lines.forEach(function(line){callback.call(this, line)});
         return currentTrace;
     }
 
-    function processLine(line) {
+    function buildCallTraceTree(lines) {
+        return buildTree(lines, processCallTraceLine);
+    }
+
+    function processCallTraceLine(line) {
         var splits;
         line = $.trim(line);
-        splits = stackFrameRegex.exec(line);
+        splits = callTraceRegex.exec(line);
         if (splits) {
-            processEntry(splits[1], splits[2], splits[3], splits[4]);
+            processActivity(splits[1], splits[2], splits[3], splits[4]);
         }
     }
 
-    function processEntry(fileName, lineNumber, entryExitIndicator, methodName) {
+    // Processes a entry to exit call, entries have > and exits have <
+    function processActivity(fileName, lineNumber, entryExitIndicator, methodName) {
         var method;
         switch(entryExitIndicator) {
         case '>':
@@ -35,7 +40,38 @@ var exports = {};
         }
     }
 
-    var processor = {};
-    processor.buildTree = buildTree;
-    exports['CallTraceProcessor'] = processor;
+    callTraceProcessor = {};
+    callTraceProcessor.buildTree = buildCallTraceTree;
+    exports['CallTraceProcessor'] = callTraceProcessor;
+
+    backTraceMethodRegex = /#\d+  \S+ in (\S+) \S+/;
+    backTraceSourceInfoRegex =   /\s+at \S+\/(\S+:\d+)/;
+    
+    function buildBackTraceTree(lines) {
+        return buildTree(lines, processBackTraceLine);
+    }
+    function processBackTraceLine(line) {
+        if (backTraceSourceInfoRegex.test(line)) {
+            processSourceInfo(backTraceSourceInfoRegex.exec(line)[1]);
+        } else if (backTraceMethodRegex.test(line)) {
+            processMethodInfo(backTraceMethodRegex.exec(line)[1]);
+        }
+    }
+
+    function processSourceInfo(sourceInfo) {
+        var stackFrames = currentTrace[0].children;
+        if (stackFrames.length > 0) {
+            stackFrames[stackFrames.length - 1 ].name += '@'+sourceInfo;
+        }
+    }
+
+    function processMethodInfo(methodName) {
+        currentTrace[0].children.push({name:methodName});
+    }
+
+    backTraceProcessor = {};
+    backTraceProcessor.buildTree = buildBackTraceTree;
+    exports['BackTraceProcessor'] = backTraceProcessor;
+
+    
 })();
