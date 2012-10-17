@@ -1,0 +1,100 @@
+<!DOCTYPE html >
+<html lan="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tree Demo</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 20px;
+      }
+      #tree-data {
+         height:200px
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h2>Simple demo of a tree. </h2>
+        <p>Paste the contents in the text area and press the render button. A tree would be displayed in the results section </p>
+      </div>
+
+      <div class="row">
+        <div class="span6">
+          <h2>Result</h2>
+          <div id="result-container" class="well">
+          </div>
+        </div>
+
+        <div class="span6">
+          <h2>Paste the data</h2>
+          <textarea id="tree-data"class="field span6 " autofocus>
+    sql_lex.cc:   363: | | | >lex_start
+    my_alloc.c:   183: | | | | >alloc_root
+    my_alloc.c:   240: | | | | <alloc_root
+    sql_lex.cc:   450: | | | <lex_start
+          </textarea>
+          Processor: 
+          <select id="processor" class="field"> 
+            <option selected>LogTraceProcessor</option>
+            <option selected>BackTraceProcessor</option>
+          </select>
+          <button id="render-tree" type="button" class="btn btn-primary">Render</button>
+        </div>
+
+      </div>
+    </div>
+    <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js"></script>
+    <script src="./treemaker.js"></script>
+
+    <script id="tree-template" type="text/x-handlebars-template">
+      <p>{{name}}</p>
+      <ul>
+        {{#recursive children}}
+        <li><p>{{name}}</p>
+          {{#if children}}
+          <ul>
+            {{{recursive children}}}
+          </ul>
+          {{/if}}
+        </li>
+        {{/recursive}}
+      </ul>
+    </script>
+    <script>
+      var audaciousFn;
+
+      Handlebars.registerHelper( 'recursive', function(children, options) {
+      var out = '';
+
+      if (options.fn !== undefined) {
+      audaciousFn = options.fn;
+      }
+
+      children.forEach(function(child){
+      out = out + audaciousFn(child);
+      });
+
+      return out;
+      });
+
+
+     var source   = $("#tree-template").html();
+     var template = Handlebars.compile(source);
+
+      $('#render-tree').click(function(){
+           var tree;
+           tree = exports.parseLines($('#tree-data').attr('value').split('\n'));
+           $("#result-container").html(template(tree[0]));
+      });
+
+      $('#render-tree').click()
+     </script>
+  </body>
+</html>
