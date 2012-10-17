@@ -41,8 +41,8 @@
           </textarea>
           Processor: 
           <select id="processor" class="field"> 
-            <option selected>LogTraceProcessor</option>
-            <option selected>BackTraceProcessor</option>
+            <option selected>CallTraceProcessor</option>
+            <option >BackTraceProcessor</option>
           </select>
           <button id="render-tree" type="button" class="btn btn-primary">Render</button>
         </div>
@@ -90,7 +90,7 @@
 
       $('#render-tree').click(function(){
            var tree;
-           tree = exports.parseLines($('#tree-data').attr('value').split('\n'));
+           tree = exports[$('#processor').attr('value')].buildTree($('#tree-data').attr('value').split('\n'));
            $("#result-container").html(template(tree[0]));
       });
 

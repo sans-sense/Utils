@@ -4,13 +4,13 @@ var exports = {};
     var stackFrameRegex, currentTrace;
     stackFrameRegex = /(\S+):\s+(\d+):[\s\S]+([><]+)(\S+)/;
 
-    function parseLines(lines) {
+    function buildTree(lines) {
         currentTrace = [{name:'root', children:[]}];
-        lines.forEach(function(line){parseLine(line)});
+        lines.forEach(function(line){processLine(line)});
         return currentTrace;
     }
 
-    function parseLine(line) {
+    function processLine(line) {
         var splits;
         line = $.trim(line);
         splits = stackFrameRegex.exec(line);
@@ -35,5 +35,7 @@ var exports = {};
         }
     }
 
-    exports.parseLines = parseLines;
+    var processor = {};
+    processor.buildTree = buildTree;
+    exports['CallTraceProcessor'] = processor;
 })();
