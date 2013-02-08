@@ -207,9 +207,6 @@
 (global-set-key [f8] 'frame-configuration-to-register)
 (global-set-key [f9] 'jump-to-register)
 
-
-(global-set-key [f6] 'ecb-minor-mode)
-
 (ido-mode 1)                            ; ido mode with
 (setq ido-enable-flex-matching t)       ; fuzzy completion
 
@@ -226,6 +223,7 @@
 
 (setq ecb-tip-of-the-day nil)
 (global-set-key "\C-o" 'ecb-goto-window-methods) 
+(global-set-key [f6] 'ecb-minor-mode)
 
 ;;##########################################
 ;;  needs jtags
