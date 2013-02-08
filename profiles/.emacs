@@ -82,6 +82,8 @@
 ;; Added to make indent 4 spaces
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+(setq-default tab-stop-list (number-sequence 4 200 4))
+
 (setq indent-line-function 'insert-tab)
 
 
@@ -201,19 +203,18 @@
 
 (toggle-fullscreen)
 
-(require 'mercurial)
-
 ;; Quicker way to get around perspective issues
 (global-set-key [f8] 'frame-configuration-to-register)
 (global-set-key [f9] 'jump-to-register)
 
-(dir-locals-mode 1)
 
-(setq tags-table-list '("/host/apurba/downloads/tools/java"
-                        "/host/apurba/thirdPartyLibs/hadoop/src"
-                        "/host/apurba/thirdPartySrc/linux/mysql-5.1/sql"
-))
+(global-set-key [f6] 'ecb-minor-mode)
 
+(ido-mode 1)                            ; ido mode with
+(setq ido-enable-flex-matching t)       ; fuzzy completion
+
+;;##########################################
+;; needs cedet, ecb
 ;; AN added CEDET support
 (load-file  "/host/apurba/downloads/tools/cedet-1.0/common/cedet.el")
 
@@ -222,15 +223,17 @@
 (load-file "/host/apurba/downloads/tools/ecb-2.40/ecb.el")
 
 (require 'ecb)
-(setq ecb-tip-of-the-day nil)
 
+(setq ecb-tip-of-the-day nil)
+(global-set-key "\C-o" 'ecb-goto-window-methods) 
+
+;;##########################################
+;;  needs jtags
 ;; AN experimenting with java support
 (load-file "/host/apurba/downloads/tools/jtags.el")
 (autoload 'jtags-mode "jtags" "Toggle jtags mode." t)
 (add-hook 'java-mode-hook 'jtags-mode)
 (setq tags-revert-without-query 't)
-
-(global-set-key "\C-o" 'ecb-goto-window-methods)
 
 ;; AN adding class search
 (defun custom-find-java-class(pattern) 
@@ -242,5 +245,28 @@
 )
 (global-set-key (kbd "C-S-t") 'custom-find-java-class)
 
-(global-set-key [f6] 'ecb-minor-mode)
+
+;;##########################################
+;; added clojure support
+(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
+(autoload 'clojure-mode "clojure" nil t)
+(require 'clojure-mode)
+
+(require 'mercurial)
+
+;; not working since 12.04
+;;(dir-locals-mode 1)
+
+;;##########################################
+;; etags
+;; AN: commented out as workingo nly on mysql code
+;; (setq tags-table-list '("/host/apurba/downloads/tools/java"
+;;                         "/host/apurba/thirdPartyLibs/hadoop/src"
+;;                         "/host/apurba/thirdPartySrc/linux/mysql/sql"
+;;                         "/host/apurba/thirdPartySrc/linux/dtrace-git/linux"
+;; ))
+;; (setq tags-table-list '( "/data/host/apurba/langexp/js/v8/src/" ))
+;;(setq tags-table-list '( "/host/apurba/thirdPartySrc/linux/mysql/"))
+(setq tags-table-list '( "/host/projects/ss-git/disrupretail/tools/opencv"))
+
 
