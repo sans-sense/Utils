@@ -4,16 +4,15 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(auto-save-file-name-transforms (quote ((".*" "~/.emacs.d/autosaves/\\1" t))))
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
  '(ecb-options-version "2.40")
  '(inhibit-startup-screen t)
  '(org-directory "/home/apurba/wip" t))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; custom-set-faces was added by Custom.lareful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  )
+
 ;;Added by Apurba
 (setq default-frame-alist
       '((width . 120) (height . 80)
@@ -21,12 +20,9 @@
         (cursor-type . box)
         (foreground-color . "black")
         (background-color . "white")))
-;        (font . "-*-Courier-normal-r-*-*-13-*-*-*-c-*-iso8859-1")))
 
-;(setq initial-frame-alist '((top . 10) (left . 30)))
 
 (setq inhibit-startup-message   t)   ; Don't want any startup message
-(setq make-backup-files         nil) ; Don't want any backup files
 (setq auto-save-list-file-name  nil) ; Don't want any .saves files
 (setq auto-save-default         nil) ; Don't want any auto saving
 
@@ -35,9 +31,7 @@
 (setq mouse-sel-retain-highlight t) ; Keep mouse high-lightening
 (setq font-use-system-font t)       ;trying the system font
 
-(global-set-key [f2] 'split-window-vertically) 
-(global-set-key [f1] 'remove-split) 
-(global-set-key (kbd "C-z") 'undo)
+;; (global-set-key (kbd "C-z") 'undo)
 
 (defvar LIMIT 1)
 (defvar time 0)
@@ -45,6 +39,7 @@
 
 (defun time-now ()
    (car (cdr (current-time))))
+
 ;;list buffers
 (defun bubble-buffer ()
    (interactive)
@@ -61,9 +56,6 @@
      (bury-buffer (car rest))
      (setq rest (cdr rest)))
    (setq time (time-now)))
-
-(global-set-key [f4] 'bubble-buffer) 
-
 
 (defun geosoft-kill-buffer ()
    ;; Kill default buffer without the extra emacs questions
@@ -126,11 +118,11 @@
   "Revert buffer without confirmation."
   (interactive) 
   (revert-buffer t t)
-  (ecb-rebuild-methods-buffer)
+  ;; (ecb-rebuild-methods-buffer)
 )
 (global-set-key [f5] 'revert-buffer-no-confirm) 
 
-(add-to-list 'load-path "~/emcust/elisp")
+(add-to-list 'load-path "/data/apps/emcust")
 (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 (autoload 'javascript-mode "javascript" nil t)
 
@@ -207,50 +199,57 @@
 (global-set-key [f8] 'frame-configuration-to-register)
 (global-set-key [f9] 'jump-to-register)
 
+
+(global-set-key [f6] 'ecb-minor-mode)
+
 (ido-mode 1)                            ; ido mode with
 (setq ido-enable-flex-matching t)       ; fuzzy completion
+
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  )
 
 ;;##########################################
 ;; needs cedet, ecb
 ;; AN added CEDET support
-(load-file  "/host/apurba/downloads/tools/cedet-1.0/common/cedet.el")
+;;(load-file  "/host/apurba/downloads/tools/cedet-1.0/common/cedet.el")
 
 ;; AN experimenting with EDE
-(add-to-list 'load-path "/host/apurba/downloads/tools/ecb-2.40")
-(load-file "/host/apurba/downloads/tools/ecb-2.40/ecb.el")
+;;(add-to-list 'load-path "/host/apurba/downloads/tools/ecb-2.40")
+;;(load-file "/host/apurba/downloads/tools/ecb-2.40/ecb.el")
 
-(require 'ecb)
+;;(require 'ecb)
 
-(setq ecb-tip-of-the-day nil)
-(global-set-key "\C-o" 'ecb-goto-window-methods) 
-(global-set-key [f6] 'ecb-minor-mode)
+;;(setq ecb-tip-of-the-day nil)
+;;(global-set-key "\C-o" 'ecb-goto-window-methods) 
 
 ;;##########################################
 ;;  needs jtags
 ;; AN experimenting with java support
-(load-file "/host/apurba/downloads/tools/jtags.el")
-(autoload 'jtags-mode "jtags" "Toggle jtags mode." t)
-(add-hook 'java-mode-hook 'jtags-mode)
-(setq tags-revert-without-query 't)
+;;(load-file "/host/apurba/downloads/tools/jtags.el")
+;;(autoload 'jtags-mode "jtags" "Toggle jtags mode." t)
+;;(add-hook 'java-mode-hook 'jtags-mode)
+;;(setq tags-revert-without-query 't)
 
 ;; AN adding class search
-(defun custom-find-java-class(pattern) 
-    "Open class file"
-    (interactive "s className ")
+;;(defun custom-find-java-class(pattern) 
+;;    "Open class file"
+;;    (interactive "s className ")
     ;; (find-tag-regexp (concat "class " pattern))
-    (find-tag-regexp (concat "\\(class\\|interface\\) " pattern))
-
-)
-(global-set-key (kbd "C-S-t") 'custom-find-java-class)
+;;    (find-tag-regexp (concat "\\(class\\|interface\\) " pattern))
+;;)
+;;(global-set-key (kbd "C-S-t") 'custom-find-java-class)
 
 
 ;;##########################################
 ;; added clojure support
-(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
-(autoload 'clojure-mode "clojure" nil t)
-(require 'clojure-mode)
+;;(add-to-list 'auto-mode-alist '("\\.clj\\'" . clojure-mode))
+;;(autoload 'clojure-mode "clojure" nil t)
+;;(require 'clojure-mode)
 
-(require 'mercurial)
+;;(require 'mercurial)
 
 ;; not working since 12.04
 ;;(dir-locals-mode 1)
@@ -265,6 +264,45 @@
 ;; ))
 ;; (setq tags-table-list '( "/data/host/apurba/langexp/js/v8/src/" ))
 ;;(setq tags-table-list '( "/host/apurba/thirdPartySrc/linux/mysql/"))
-(setq tags-table-list '( "/host/projects/ss-git/disrupretail/tools/opencv"))
+;; (setq tags-table-list '( "/host/projects/ss-git/disrupretail/tools/opencv"))
+;;(setq tags-table-list '( "/host/apurba/thirdPartySrc/linux/dtrace-git/linux"))
+;; (setq tags-table-list '( "/data/host/projects/adap.tv/ribs2/wip/"))
 
+;;##########################################
+;; Adding slime support AN 14th Feb
+;;##########################################
+;;(setq inferior-lisp-program "/usr/bin/sbcl") ; your Lisp system
+;;(add-to-list 'load-path "/host/apurba/langexp/lisp/slime/")  ; your SLIME directory
+(require 'slime)
+(slime-setup)
+
+
+
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+;; Added 28th March for multiple cursors from marmalade
+(require 'multiple-cursors)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+(add-to-list 'auto-mode-alist '("\\.groovy\\'" . java-mode))
+
+;; AN: 5th November 2013, experimenting with Prolog
+  (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
+  (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+  (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
+  (setq prolog-system 'swi)
+  (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
+                                  ("\\.m$" . mercury-mode))
+                                auto-mode-alist))
 
