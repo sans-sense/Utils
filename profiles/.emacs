@@ -222,8 +222,8 @@
 
 ;;(require 'ecb)
 
-;;(setq ecb-tip-of-the-day nil)
-;;(global-set-key "\C-o" 'ecb-goto-window-methods) 
+(setq ecb-tip-of-the-day nil)
+(global-set-key "\C-o" 'ecb-goto-window-methods) 
 
 ;;##########################################
 ;;  needs jtags
@@ -256,7 +256,7 @@
 
 ;;##########################################
 ;; etags
-;; AN: commented out as workingo nly on mysql code
+;; AN: commented out as working only on mysql code
 ;; (setq tags-table-list '("/host/apurba/downloads/tools/java"
 ;;                         "/host/apurba/thirdPartyLibs/hadoop/src"
 ;;                         "/host/apurba/thirdPartySrc/linux/mysql/sql"
@@ -298,11 +298,29 @@
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . java-mode))
 
 ;; AN: 5th November 2013, experimenting with Prolog
-  (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
-  (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
-  (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
-  (setq prolog-system 'swi)
-  (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
-                                  ("\\.m$" . mercury-mode))
-                                auto-mode-alist))
+;; (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
+;; (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+;; (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
+;; (setq prolog-system 'swi)
+;; (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
+;;                                 ("\\.m$" . mercury-mode))
+;;                               auto-mode-alist))
 
+
+;; AN removed markdown promotion keys
+(add-hook 'markdown-mode-hook 'bind-windmove-keys)
+;;(eval-after-load "markdown-mode-hook" disable-promotion-keys)
+(defun bind-windmove-keys()
+  (local-set-key [M-left] 'windmove-left)
+  (local-set-key [M-right] 'windmove-right)
+  (local-set-key [M-up] 'windmove-up)
+  (local-set-key [M-down] 'windmove-down)
+)
+
+;; AN adding support for skewer https://github.com/skeeto/skewer-mode
+(skewer-setup)
+
+
+;; AN java debugging crap
+;; (add-to-list 'load-path (expand-file-name "/data/apps/emcust/jdibug-0.5"))
+;; (require 'jdibug)
