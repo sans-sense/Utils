@@ -622,7 +622,7 @@ sql_profile.cc:   428: | <PROFILING::finish_current_profile
 
       $('#render-tree').click(function(){
            var tree;
-           tree = exports[$('#processor option:selected').text()].buildTree($('#tree-data').text().split('\n'));
+           tree = exports[$('#processor option:selected').text()].buildTree($('#tree-data').val().split('\n'));
            resetTreeData(tree[0]);
            convertTrees();
       });
