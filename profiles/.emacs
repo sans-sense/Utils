@@ -324,3 +324,48 @@
 ;; AN java debugging crap
 ;; (add-to-list 'load-path (expand-file-name "/data/apps/emcust/jdibug-0.5"))
 ;; (require 'jdibug)
+
+
+(setq initial-scratch-message ";;use c-j to evaluate\n(setq project-directory \"/data/work/projects/orchestrator/wip/\")\n(setq tags-table-list '( \"/data/work/ss-git/fun/pic2perfect/sandbox/tesseract-ocr/\")) \n;;use c-x z to repeat commands")
+
+;; AN added to override all other key settings http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
+(defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
+
+(define-key my-keys-minor-mode-map [M-left] 'windmove-left)
+(define-key my-keys-minor-mode-map [M-right] 'windmove-right)
+(define-key my-keys-minor-mode-map [M-up] 'windmove-up)
+(define-key my-keys-minor-mode-map [M-down] 'windmove-down)
+
+(define-minor-mode my-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  t " my-keys" 'my-keys-minor-mode-map)
+
+(my-keys-minor-mode 1)
+
+(setenv "NODE_NO_READLINE" "1")
+
+
+;; Added by AN remove all newlines
+(defun unwrap-line ()
+  "Remove all newlines until we get to two consecutive ones.
+    Or until we reach the end of the buffer.
+    Great for unwrapping quotes before sending them on IRC."
+  (interactive)
+  (let ((start (point))
+        (end (copy-marker (or (search-forward "\n\n" nil t)
+                              (point-max))))
+        (fill-column (point-max)))
+    (fill-region start end)
+    (goto-char end)
+    (newline)
+    (goto-char start)))
+
+
+;; needs external packages
+;; AN problems with ecb
+(setq ecb-examples-bufferinfo-buffer-name nil)
+
+;; AN added ess support (R)
+(require 'ess-site)
+
+
