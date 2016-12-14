@@ -60,26 +60,10 @@ findclass() {
 
 }
 
-work-good(){
-	sudo service sav-web stop
-	sudo service sav-protect stop
-	sudo service sav-rms stop
-}
-
-work-bad(){
-	sudo service sav-web stop
-	sudo service sav-protect stop
-	sudo service sav-rms stop
-}
 
 setupPersonalGit() {
     git config --global user.name "sans-sense"
     git config --global user.email "ap.nath@gmail.com"
-}
-
-setupWorkGit() {
-    git config --global user.name "apurba"
-    git config --global user.email "apurba.n@imaginea.com"
 }
 
 export my_chroot_dir=/data/work/virtual/dtrace_test
