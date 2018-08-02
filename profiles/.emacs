@@ -1,31 +1,3 @@
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(auto-save-file-name-transforms (quote ((".*" "~/.emacs.d/autosaves/\\1" t))))
- '(ecb-options-version "2.40")
- '(inhibit-startup-screen t)
- '(org-directory "/home/apurba/wip" t))
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.lareful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
-
-;;Added by Apurba
-(setq default-frame-alist
-      '((width . 120) (height . 80)
-        (cursor-color . "black")
-        (cursor-type . box)
-        (foreground-color . "black")
-        (background-color . "white")))
-
-
-(setq inhibit-startup-message   t)   ; Don't want any startup message
-(setq auto-save-list-file-name  nil) ; Don't want any .saves files
-(setq auto-save-default         nil) ; Don't want any auto saving
-
 (setq search-highlight           t) ; Highlight search object
 (setq query-replace-highlight    t) ; Highlight query object
 (setq mouse-sel-retain-highlight t) ; Keep mouse high-lightening
@@ -38,38 +10,43 @@
 (defvar mylist nil)
 
 (defun time-now ()
-   (car (cdr (current-time))))
+  (car (cdr (current-time))))
+
+;; AN: had problems with it not being honoured
+(setq make-backup-files nil)
+
+
 
 ;;list buffers
 (defun bubble-buffer ()
-   (interactive)
-   (if (or (> (- (time-now) time) LIMIT) (null mylist))
-       (progn (setq mylist (copy-alist (buffer-list)))
-          (delq (get-buffer " *Minibuf-0*") mylist)
-          (delq (get-buffer " *Minibuf-1*") mylist)))
-   (bury-buffer (car mylist))
-   (setq mylist (cdr mylist))
-   (setq newtop (car mylist))
-   (switch-to-buffer (car mylist))
-   (setq rest (cdr (copy-alist mylist)))
-   (while rest
-     (bury-buffer (car rest))
-     (setq rest (cdr rest)))
-   (setq time (time-now)))
+  (interactive)
+  (if (or (> (- (time-now) time) LIMIT) (null mylist))
+      (progn (setq mylist (copy-alist (buffer-list)))
+	     (delq (get-buffer " *Minibuf-0*") mylist)
+	     (delq (get-buffer " *Minibuf-1*") mylist)))
+  (bury-buffer (car mylist))
+  (setq mylist (cdr mylist))
+  (setq newtop (car mylist))
+  (switch-to-buffer (car mylist))
+  (setq rest (cdr (copy-alist mylist)))
+  (while rest
+    (bury-buffer (car rest))
+    (setq rest (cdr rest)))
+  (setq time (time-now)))
 
 (defun geosoft-kill-buffer ()
-   ;; Kill default buffer without the extra emacs questions
-   (interactive)
-   (kill-buffer (buffer-name))
-   (set-name))
+  ;; Kill default buffer without the extra emacs questions
+  (interactive)
+  (kill-buffer (buffer-name))
+  (set-name))
 
-(global-set-key [C-delete] 'geosoft-kill-buffer) 
+(global-set-key [C-delete] 'geosoft-kill-buffer)
 
 ;;key for going to line
-(global-set-key "\C-l" 'goto-line) ; [Ctrl]-[L] 
+(global-set-key "\C-l" 'goto-line) ; [Ctrl]-[L]
 
 ;; makes the tool bar disappear
-(tool-bar-mode 0)
+;;(tool-bar-mode 0)
 
 ;; Added to make indent 4 spaces
 (setq-default indent-tabs-mode nil)
@@ -84,43 +61,47 @@
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
-;; make emacs use the clipboard
-(setq x-select-enable-clipboard t)
-(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+;; make emacs use the clipboard, only for mac
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+(setq interprogram-cut-function 'paste-to-osx)
+(setq interprogram-paste-function 'copy-from-osx)
 
 
 ;;enable kill all direds
 (defun kill-all-dired()
- (dolist(buffer (buffer-list))
-             (set-buffer buffer)
-             (when (equal major-mode 'dired-mode)
-               (kill-buffer buffer)
-             )
- )
-)
+  (dolist(buffer (buffer-list))
+    (set-buffer buffer)
+    (when (equal major-mode 'dired-mode)
+      (kill-buffer buffer)
+      )
+    )
+  )
 
 ;; Get the current filename
 (defun show-current-filename()
   "Shows the current filename from buffer-file-truename added by AN"
   (interactive)
   (message "Filename is %s" buffer-file-truename)
-)
+  )
 
-(global-set-key "\M-\r" 'show-current-filename) 
-
-;; added for the nasty autosave and bakcup litter
-;; Put autosave files (ie #foo#) and backup files (ie foo~) in ~/.emacs.d/.
-;; create the autosave dir if necessary, since emacs won't.
-(make-directory "~/.emacs.d/autosaves/" t)
+(global-set-key "\M-\r" 'show-current-filename)
 
 ;; Reload file
 (defun revert-buffer-no-confirm ()
   "Revert buffer without confirmation."
-  (interactive) 
+  (interactive)
   (revert-buffer t t)
   ;; (ecb-rebuild-methods-buffer)
-)
-(global-set-key [f5] 'revert-buffer-no-confirm) 
+  )
+(global-set-key [f5] 'revert-buffer-no-confirm)
 
 (add-to-list 'load-path "/data/apps/emcust")
 (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
@@ -130,7 +111,7 @@
 (defun delete-line()
   (interactive)
   (delete-region (line-beginning-position) (line-end-position))
-)
+  )
 (global-set-key [C-S-delete] 'delete-line)
 
 ;; unbound c-/ from undo and bind it to comment-region
@@ -141,36 +122,36 @@
 ;; unbound c-t and bind it to eclipse like find type
 ;; (global-unset-key (kbd "C-t"))
 ;;(global-set-key (kbd "C-t") 'find-name-dired)
-(setq project-directory "/home/apurba/wip")
+(setq project-directory "/data/work/wip")
 
 (defun custom-find-name-dired (pattern)
   "Open from specific dir"
   (interactive "s Pattern: ")
   ;;(message "directory is : %s " project-directory)
-  (find-name-dired default-directory pattern)
-)
+  (find-name-dired project-directory pattern)
+  )
 (global-set-key (kbd "C-S-r") 'custom-find-name-dired)
 
 ;; goto last edited http://emacsworld.blogspot.com/2010/04/remembering-last-edited-location-in.html
 (defun goto-last-edit-point ()
-"Go to the last point where editing occurred."
-(interactive)
-(let ((undos buffer-undo-list))
-(when (listp undos)
-(while (and undos
-(let ((pos (or (cdr-safe (car undos))
-(car undos))))
-(not (and (integerp pos)
-(goto-char (abs pos))))))
-(setq undos (cdr undos))))))
+  "Go to the last point where editing occurred."
+  (interactive)
+  (let ((undos buffer-undo-list))
+    (when (listp undos)
+      (while (and undos
+		  (let ((pos (or (cdr-safe (car undos))
+				 (car undos))))
+		    (not (and (integerp pos)
+			      (goto-char (abs pos))))))
+	(setq undos (cdr undos))))))
 
-(global-set-key (kbd "C-q") 'goto-last-edit-point) 
+(global-set-key (kbd "C-q") 'goto-last-edit-point)
 
 ;; Added for org mode
 (add-to-list 'auto-mode-alist '("\\.aporg\\'" . org-mode))
 (global-set-key "\C-ca" 'org-agenda)
 (setq org-log-done 'time)
-(setq org-directory "/home/apurba/wip")
+(setq org-directory "/data/work/wip")
 (setq org-default-notes-file (concat org-directory "/Plan.aporg"))
 (global-set-key "\C-cc" 'org-capture)
 (setq org-agenda-files (concat org-directory "/agendafiles"))
@@ -188,12 +169,12 @@
 (defun toggle-fullscreen ()
   (interactive)
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-	    		 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+			 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
   (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-	    		 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-)
+			 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+  )
 
-(toggle-fullscreen)
+;;(toggle-fullscreen)
 
 ;; Quicker way to get around perspective issues
 (global-set-key [f8] 'frame-configuration-to-register)
@@ -223,7 +204,7 @@
 ;;(require 'ecb)
 
 (setq ecb-tip-of-the-day nil)
-(global-set-key "\C-o" 'ecb-goto-window-methods) 
+(global-set-key "\C-o" 'ecb-goto-window-methods)
 
 ;;##########################################
 ;;  needs jtags
@@ -234,10 +215,10 @@
 ;;(setq tags-revert-without-query 't)
 
 ;; AN adding class search
-;;(defun custom-find-java-class(pattern) 
+;;(defun custom-find-java-class(pattern)
 ;;    "Open class file"
 ;;    (interactive "s className ")
-    ;; (find-tag-regexp (concat "class " pattern))
+;; (find-tag-regexp (concat "class " pattern))
 ;;    (find-tag-regexp (concat "\\(class\\|interface\\) " pattern))
 ;;)
 ;;(global-set-key (kbd "C-S-t") 'custom-find-java-class)
@@ -273,8 +254,8 @@
 ;;##########################################
 ;;(setq inferior-lisp-program "/usr/bin/sbcl") ; your Lisp system
 ;;(add-to-list 'load-path "/host/apurba/langexp/lisp/slime/")  ; your SLIME directory
-(require 'slime)
-(slime-setup)
+;;(require 'slime)
+;;(slime-setup)
 
 
 
@@ -286,27 +267,6 @@
 ;;; Move this code earlier if you want to reference
 ;;; packages in your .emacs.
 ;; Added 28th March for multiple cursors from marmalade
-(require 'multiple-cursors)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-(add-to-list 'auto-mode-alist '("\\.groovy\\'" . java-mode))
-
-;; AN: 5th November 2013, experimenting with Prolog
-;; (autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
-;; (autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
-;; (autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
-;; (setq prolog-system 'swi)
-;; (setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
-;;                                 ("\\.m$" . mercury-mode))
-;;                               auto-mode-alist))
-
-
 ;; AN removed markdown promotion keys
 (add-hook 'markdown-mode-hook 'bind-windmove-keys)
 ;;(eval-after-load "markdown-mode-hook" disable-promotion-keys)
@@ -315,10 +275,10 @@
   (local-set-key [M-right] 'windmove-right)
   (local-set-key [M-up] 'windmove-up)
   (local-set-key [M-down] 'windmove-down)
-)
+  )
 
 ;; AN adding support for skewer https://github.com/skeeto/skewer-mode
-(skewer-setup)
+;;(skewer-setup)
 
 
 ;; AN java debugging crap
@@ -326,7 +286,7 @@
 ;; (require 'jdibug)
 
 
-(setq initial-scratch-message ";;use c-j to evaluate\n(setq project-directory \"/data/work/projects/orchestrator/wip/\")\n(setq tags-table-list '( \"/data/work/ss-git/fun/pic2perfect/sandbox/tesseract-ocr/\")) \n;;use c-x z to repeat commands")
+(setq initial-scratch-message ";;use c-j to evaluate\n(setq project-directory \"/data/work/sprinklr/chatter/server\")\n(setq tags-table-list (list ( expand-file-name \"TAGS\"))\n;;use c-x z to repeat commands\n;;Move C-a -> star of line, e -> end of line, M-f one word, -b -> back one word; details at https://www.gnu.org/software/emacs/manual/html_node/emacs/Moving-Point.html")
 
 ;; AN added to override all other key settings http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emacs
 (defvar my-keys-minor-mode-map (make-keymap) "my-keys-minor-mode keymap.")
@@ -347,25 +307,84 @@
 
 ;; Added by AN remove all newlines
 (defun unwrap-line ()
-  "Remove all newlines until we get to two consecutive ones.
+    "Remove all newlines until we get to two consecutive ones.
     Or until we reach the end of the buffer.
     Great for unwrapping quotes before sending them on IRC."
-  (interactive)
-  (let ((start (point))
-        (end (copy-marker (or (search-forward "\n\n" nil t)
-                              (point-max))))
-        (fill-column (point-max)))
-    (fill-region start end)
-    (goto-char end)
-    (newline)
-    (goto-char start)))
+    (interactive)
+    (let ((start (point))
+	  (end (copy-marker (or (search-forward "\n\n" nil t)
+				(point-max))))
+	  (fill-column (point-max)))
+      (fill-region start end)
+      (goto-char end)
+      (newline)
+      (goto-char start)))
 
 
 ;; needs external packages
 ;; AN problems with ecb
-(setq ecb-examples-bufferinfo-buffer-name nil)
+;;(setq ecb-examples-bufferinfo-buffer-name nil)
 
 ;; AN added ess support (R)
-(require 'ess-site)
+;;(require 'ess-site)
 
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ecb-options-version "2.50")
+ '(me\.alpheus/gotags-tags-file
+   "/data/work/sprinklr/wip/breaking-up/service-mesh/kops/src/k8s.io/kops/TAGS")
+ '(package-selected-packages
+   (quote
+    (go-mode yaml-mode cider clojure-mode php-mode markdown-mode ecb scala-mode groovy-mode)))
+ '(warning-suppress-types (quote (undo discard-info))))
+
+
+;; comint-previous-input
+
+
+(global-set-key (kbd "C-,") 'comint-previous-input )
+(global-set-key (kbd "C-.") 'comint-next-input )
+
+(setq tags-table-list '( "/data/work/sprinklr/app/"))
+
+(semantic-mode 1)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(setq ring-bell-function 'ignore)
+(set-frame-parameter nil 'fullscreen 'fullboth)
+;; erlang setup
+(setq load-path (cons  "/usr/local/Cellar/erlang/19.2/lib/erlang/lib/tools-2.9/emacs/" load-path))
+(setq erlang-root-dir "/usr/local/Cellar/erlang/19.2/lib/erlang")
+(setq exec-path (cons "/usr/local/Cellar/erlang/19.2/lib/erlang/bin" exec-path))
+(require 'erlang-start)
+
+;; AN: fundamental mode has funny tab, text mode is what most of my files are
+(setq-default major-mode 'text-mode)
+
+;; AN: removing auto-save and lockfiles "find emacs/Interlocking.html#Interlocking" and  find /emacs/AutoSave"
+(setq auto-save-default nil)
+(setq backup-inhibited t)
+(setq create-lockfiles nil)
+
+;; AN: cleaning stack traces
+(defun sanitize-stacktrace()
+  "replaces \\n\\t with line-break added by AN"
+  (interactive)
+(while (re-search-forward "\\\\\\\\n\\\\\\\\tat" nil t)
+    (replace-match "
+ at "))
+(clipboard-kill-ring-save (point-min) (point-max)))
+
+;; AN: adding protobuf support and golang support
+(require 'protobuf-mode)
+(require 'me-alpheus-gotags)
+(add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
