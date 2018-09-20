@@ -150,3 +150,8 @@ source '/data/apps/wip/tmp/google-cloud-sdk/path.bash.inc'
 source '/data/apps/wip/tmp/google-cloud-sdk/completion.bash.inc'
 
 export GOPATH=/data/work/others/gocode
+
+awsdocker(){
+aws_login=$(aws ecr get-login --no-include-email --region ap-south-1)
+$aws_login
+}
