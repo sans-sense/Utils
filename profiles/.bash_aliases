@@ -43,14 +43,16 @@ alias jd-gui="/data/apps/jd-gui/jd-gui"
 alias myjad='/data/apps/jad/jad -sjava -r -d//data/experiment/decompiled -lnc'
 
 ulimit -c unlimited
-
 ## AN useful way to make notes about things
 note(){
-    file="/data/personal/notes.txt"
+    tgt_file="/data/personal/notes.txt"
+    file="/data/personal/tmp_notes.txt"
+    tmp_file="/data/personal/temp_note.txt"
     echo `date`>>$file
     echo "$@" >>$file
     echo "" >>$file
-
+    cat $file $tgt_file > $tmp_file && mv $tmp_file $tgt_file
+    rm $file
 }
 
 findclass() {
