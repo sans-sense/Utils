@@ -159,3 +159,8 @@ awsdocker(){
 aws_login=$(aws ecr get-login --no-include-email --region ap-south-1)
 $aws_login
 }
+
+
+day() {
+  date -r $(($1 / 1000))
+}
