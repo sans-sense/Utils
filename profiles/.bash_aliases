@@ -1,4 +1,4 @@
-
+export data_dir='/Users/apurba.nath/data'
 export ANT_OPTS='-Xms768m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m'
 
 ## AN added /usr/local/lib to path
@@ -45,11 +45,11 @@ alias myjad='/data/apps/jad/jad -sjava -r -d//data/experiment/decompiled -lnc'
 ulimit -c unlimited
 ulimit -n 20000
 
-## AN useful way to make notes about things
+# AN useful way to make notes about things
 note(){
-    tgt_file="/data/personal/notes.txt"
-    file="/data/personal/tmp_notes.txt"
-    tmp_file="/data/personal/temp_note.txt"
+    tgt_file=$data_dir"/personal/notes.txt"
+    file=$data_dir"/personal/tmp_notes.txt"
+    tmp_file=$data_dir"/personal/temp_note.txt"
     printf `date +%D`" -- ">>$file
     echo "$@" >>$file
     echo "" >>$file
