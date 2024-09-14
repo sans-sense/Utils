@@ -1,16 +1,19 @@
-export data_dir='/Users/apurba.nath/data'
+
 export ANT_OPTS='-Xms768m -Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m'
 
 ## AN added /usr/local/lib to path
-export PATH=$PATH:$LD_LIBRARY_PATH:/data/apps/scala/bin:/data/apps/node/bin/:/data/apps/maven/bin/:/usr/local/go/bin
+export PATH=$PATH:$LD_LIBRARY_PATH:/data/apps/scala/bin:/data/apps/node/bin/:/data/apps/maven/bin/:/usr/local/go/bin:/home/apurba/.local/bin
 
-alias gsync='git checkout master && git pull origin master && git rebase master work && git checkout master && git merge work && git push origin master && git checkout work'
+alias gsync='git checkout main && git pull origin main && git rebase main work && git checkout main && git merge work && git push origin main && git checkout work'
 
-alias gesync='git checkout master && git pull origin master && git rebase master work && git checkout master && git merge work && git push origin master:refs/for/master && git checkout work'
+alias gesync='git checkout main && git pull origin main && git rebase main work && git checkout main && git merge work && git push origin main:refs/for/main && git checkout work'
+
+
+export data_dir=/data/
 
 alias Grep=grep
 alias vi=vim
-PS1='$PWD $ '
+PS1='\[\e[32m\]\u@\h \[\e[34m\]\w\[\e[0m\]\$ '
 
 alias explorer=nautilus
 
@@ -36,6 +39,17 @@ gm(){
 	git status |grep 'modified' | cut -f 2 |awk '{print $2}' |xargs git add
 }
 
+set_title(){
+	TITLE=("$@") 
+	printf "\033]0;$TITLE\007"
+}
+
+hit_svr(){
+    url_path="$1"
+    shift
+    json_data="$1"
+    curl -X POST "localhost:4000/$url_path" -H "Content-Type: application/json" -d "$json_data"
+}
 # ffmpeg -ac 1 -f x11grab -s wxga -r 50 -i :0.0 -sameq test.mpg
 # magic with awk print from substring cat p2.txt |awk '{print substr($0,index($0, "UserGroup [id=7"))}' |grep -v "perspective update"
 alias jd-gui="/data/apps/jd-gui/jd-gui"
@@ -45,11 +59,11 @@ alias myjad='/data/apps/jad/jad -sjava -r -d//data/experiment/decompiled -lnc'
 ulimit -c unlimited
 ulimit -n 20000
 
-# AN useful way to make notes about things
+## AN useful way to make notes about things
 note(){
-    tgt_file=$data_dir"/personal/notes.txt"
-    file=$data_dir"/personal/tmp_notes.txt"
-    tmp_file=$data_dir"/personal/temp_note.txt"
+    tgt_file="/data/personal/notes.txt"
+    file="/data/personal/tmp_notes.txt"
+    tmp_file="/data/personal/temp_note.txt"
     printf `date +%D`" -- ">>$file
     echo "$@" >>$file
     echo "" >>$file
@@ -73,7 +87,7 @@ setupPersonalGit() {
 export my_chroot_dir=/data/work/virtual/dtrace_test
 
 printIp() {
-	ifconfig |grep -A 1 $@ |tail -1 |awk '{print substr($2,6)}'
+	ifconfig |grep -A 1 $@ |tail -1 |awk '{print $2}'
 }
 
 alias tstart='$tomcat_home/bin/catalina.sh jpda start'
@@ -147,14 +161,6 @@ alias space="df -kH |grep /dev/sda4"
 export LC_ALL="en_US.UTF-8"
 
 
-# The next line updates PATH for the Google Cloud SDK.
-source '/data/apps/wip/tmp/google-cloud-sdk/path.bash.inc'
-
-# The next line enables shell command completion for gcloud.
-source '/data/apps/wip/tmp/google-cloud-sdk/completion.bash.inc'
-
-export GOPATH=/data/work/others/gocode
-
 awsdocker(){
 aws_login=$(aws ecr get-login --no-include-email --region ap-south-1)
 $aws_login
@@ -164,3 +170,18 @@ $aws_login
 day() {
   date -r $(($1 / 1000))
 }
+
+cd /data/work/others
+
+function stitle(){
+ if [ -z "$PS1_BACK" ];  # set backup if it is empty
+ then
+  PS1_BACK="$PS1"
+ fi
+
+ TITLE="\[\e]0;$*\a\]"
+ PS1="${PS1_BACK}${TITLE}"
+}
+
+alias st_nb="cd /data/work/others && jupyter lab"
+export PYTHONPATH=$PYTHONPATH:/data/work/zenquant/
